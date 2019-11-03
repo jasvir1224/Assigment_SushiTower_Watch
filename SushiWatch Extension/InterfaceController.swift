@@ -16,7 +16,36 @@ class InterfaceController: WKInterfaceController, WCSessionDelegate {
         
     }
     
-
+    
+    @IBAction func leftButton() {
+        
+        if (WCSession.default.isReachable == true) {
+            // Here is the message you want to send to the watch
+            // All messages get sent as dictionaries
+            let message = ["catMovement":"Left"]as [String : Any]
+            // Send the message
+       WCSession.default.sendMessage(message, replyHandler:nil)
+           print("Message Sent")}
+        else {
+           print("Cannot reach watch!")
+            
+        }
+    }
+    
+    @IBAction func RightButton() {
+        if (WCSession.default.isReachable == true) {
+            // Here is the message you want to send to the watch
+            // All messages get sent as dictionaries
+            let message = ["catMovement":"Right"]as [String : Any]
+            // Send the message
+            WCSession.default.sendMessage(message, replyHandler:nil)
+            print("Message Sent")}
+        else {
+            print("Cannot reach watch!")
+            
+        }
+    }
+    
     override func awake(withContext context: Any?) {
         super.awake(withContext: context)
         
@@ -31,6 +60,12 @@ class InterfaceController: WKInterfaceController, WCSessionDelegate {
     override func didDeactivate() {
         // This method is called when watch view controller is no longer visible
         super.didDeactivate()
-    }
+        if (WCSession.isSupported() == true) {
+            print("WC is supported!")
+            // create a communication session with the phone
+            let session = WCSession.default
+            session.delegate = self
+            session.activate()}
+        else {print("WC NOT supported!")}}
 
 }

@@ -23,20 +23,46 @@ class GameScene: SKScene, WCSessionDelegate {
         
     }
     
+    func session(_ session: WCSession, didReceiveMessage message: [String : Any]) {
+        
+        let catposition = message["catMovement"] as! String
+        if(catposition == "Right")
+        {
+            cat.position = CGPoint(x:self.size.width*0.85, y:100)
+            // change the cat's direction
+            let facingLeft = SKAction.scaleX(to: -1, duration: 0)
+            self.cat.run(facingLeft)
+            
+            // save cat's position
+            self.catPosition = "right"
+            } else if(catposition == "Left"){
+            cat.position = CGPoint(x:self.size.width*0.25, y:100)
+            
+            // change the cat's direction
+            let facingRight = SKAction.scaleX(to: 1, duration: 0)
+            self.cat.run(facingRight)
+            
+            // save cat's position
+            self.catPosition = "left"
+            
+        }
+    }
     
     let cat = SKSpriteNode(imageNamed: "character1")
     let sushiBase = SKSpriteNode(imageNamed:"roll")
+    
     // Make a tower
-    var sushiTower:[SKSpriteNode] = []
+    var sushiTower:[SushiPiece] = []
     let SUSHI_PIECE_GAP:CGFloat = 80
-
-    // Make chopsticks
-    var chopstickGraphicsArray:[SKSpriteNode] = []
-    
-    // Make variables to store current position
     var catPosition = "left"
-    var chopstickPositions:[String] = []
     
+    // Show life and score labels
+    let lifeLabel = SKLabelNode(text:"Lives: ")
+    let scoreLabel = SKLabelNode(text:"Score: ")
+    
+    var lives = 5
+    var score = 0
+    var persontap: String = ""
     
     
     func spawnSushi() {
@@ -46,7 +72,7 @@ class GameScene: SKScene, WCSessionDelegate {
         // -----------------------
         
         // 1. Make a sushi
-        let sushi = SKSpriteNode(imageNamed:"roll")
+        let sushi = SushiPiece(imageNamed:"roll")
         
         // 2. Position sushi 10px above the previous one
         if (self.sushiTower.count == 0) {
@@ -68,70 +94,8 @@ class GameScene: SKScene, WCSessionDelegate {
         
         // 4. Add sushi to array
         self.sushiTower.append(sushi)
-        
-        
-        // -----------------------
-        // MARK: PART 2: ADD CHOPSTICKS TO SUSHI
-        // -----------------------
-        
-        // Generate  a random number (0, 1, 2)
-        // 0 = no stick
-            // ???????
-        // 1 = stick on right
-            // stick.position.x = sushi.position.x + 100
-            // stick.position.y = sushi.position.y - 10
-        // 2 = stick on left
-            // stick.position.x = sushi.position.x - 100
-            // stick.position.y = sushi.position.y - 10
-        
-        
-        // generate a number between 1 and 2
-        let stickPosition = Int.random(in: 1...2)
-        print("Random number: \(stickPosition)")
-        if (stickPosition == 1) {
-            // save the current position of the chopstick
-            self.chopstickPositions.append("right")
-            
-            // draw the chopstick on the screen
-            let stick = SKSpriteNode(imageNamed:"chopstick")
-            stick.position.x = sushi.position.x + 100
-            stick.position.y = sushi.position.y - 10
-            // add chopstick to the screen
-            addChild(stick)
-            
-            // add the chopstick object to the array
-            self.chopstickGraphicsArray.append(stick)
-            
-            // redraw stick facing other direciton
-            let facingRight = SKAction.scaleX(to: -1, duration: 0)
-            stick.run(facingRight)
-        }
-        else if (stickPosition == 2) {
-            // save the current position of the chopstick
-            self.chopstickPositions.append("left")
-            
-            // left
-            let stick = SKSpriteNode(imageNamed:"chopstick")
-            stick.position.x = sushi.position.x - 100
-            stick.position.y = sushi.position.y - 10
-            // add chopstick to the screen
-            addChild(stick)
-            
-            // add the chopstick to the array
-            self.chopstickGraphicsArray.append(stick)
-        }
-        
-        
-        // Add this if you cannot see the chopsticks
-        // sushi.zPosition = -1
-        
-       
-        
-        
     }
     
-    
-  
     override func didMove(to view: SKView) {
         // add background
         let background = SKSpriteNode(imageNamed: "background")
@@ -150,16 +114,34 @@ class GameScene: SKScene, WCSessionDelegate {
         
         // build the tower
         self.buildTower()
-    }
+        
+        // Game labels
+        self.scoreLabel.position.x = 100
+        self.scoreLabel.position.y = size.height - 100
+        self.scoreLabel.fontName = "Avenir"
+        self.scoreLabel.fontSize = 40
+        addChild(scoreLabel)
+        
+        // Life label
+        self.lifeLabel.position.x = 100
+        self.lifeLabel.position.y = size.height - 150
+        self.lifeLabel.fontName = "Avenir"
+        self.lifeLabel.fontSize = 40
+        addChild(lifeLabel)
+        
+        // WatchConnectivity
+        if (WCSession.isSupported() == true) {
+            print("WC is supported!")
+            // create a communication session with the watch
+            let session = WCSession.default
+            session.delegate = self
+            session.activate()}
+        else {print("WC NOT supported!")}
+        
+        }
     
     func buildTower() {
-        for _ in 0...5 {
-            self.spawnSushi()
-        }
-        for i in 0...5 {
-            print(self.chopstickPositions[i])
-        }
-        
+        for _ in 0...10 {self.spawnSushi()}
     }
     
     
@@ -177,7 +159,7 @@ class GameScene: SKScene, WCSessionDelegate {
         guard let mousePosition = touches.first?.location(in: self) else {
             return
         }
-
+        
         print(mousePosition)
         
         // ------------------------------------
@@ -186,29 +168,18 @@ class GameScene: SKScene, WCSessionDelegate {
         //  remove a piece from the tower & redraw the tower
         // -------------------------------------
         let pieceToRemove = self.sushiTower.first
-        let stickToRemove = self.chopstickGraphicsArray.first
-        
-        if (pieceToRemove != nil && stickToRemove != nil) {
+        if (pieceToRemove != nil) {
             // SUSHI: hide it from the screen & remove from game logic
             pieceToRemove!.removeFromParent()
             self.sushiTower.remove(at: 0)
-        
-            // STICK: hide it from screen & remove from game logic
-            stickToRemove!.removeFromParent()
-            self.chopstickGraphicsArray.remove(at:0)
-            
-            // STICK: Update stick positions array:
-            self.chopstickPositions.remove(at:0)
             
             // SUSHI: loop through the remaining pieces and redraw the Tower
             for piece in sushiTower {
                 piece.position.y = piece.position.y - SUSHI_PIECE_GAP
             }
             
-            // STICK: loop through the remaining sticks and redraw
-            for stick in chopstickGraphicsArray {
-                stick.position.y = stick.position.y - SUSHI_PIECE_GAP
-            }
+            // To make the tower inifnite, then ADD a new piece
+            self.spawnSushi()
         }
         
         // ------------------------------------
@@ -218,33 +189,35 @@ class GameScene: SKScene, WCSessionDelegate {
         // -------------------------------------
         
         // 1. detect where person clicked
-        let middleOfScreen  = self.size.width / 2
-        if (mousePosition.x < middleOfScreen) {
-            print("TAP LEFT")
-            // 2. person clicked left, so move cat left
-            cat.position = CGPoint(x:self.size.width*0.25, y:100)
-            
-            // change the cat's direction
-            let facingRight = SKAction.scaleX(to: 1, duration: 0)
-            self.cat.run(facingRight)
-            
-            // save cat's position
-            self.catPosition = "left"
-            
-        }
-        else {
-            print("TAP RIGHT")
-            // 2. person clicked right, so move cat right
-            cat.position = CGPoint(x:self.size.width*0.85, y:100)
-            
-            // change the cat's direction
-            let facingLeft = SKAction.scaleX(to: -1, duration: 0)
-            self.cat.run(facingLeft)
-            
-            // save cat's position
-            self.catPosition = "right"
-        }
-
+       // let middleOfScreen  = self.size.width / 2
+        
+//        if (mousePosition.x < middleOfScreen){
+//
+//            print("TAP LEFT")
+//            // 2. person clicked left, so move cat left
+//            cat.position = CGPoint(x:self.size.width*0.25, y:100)
+//
+//            // change the cat's direction
+//            let facingRight = SKAction.scaleX(to: 1, duration: 0)
+//            self.cat.run(facingRight)
+//
+//            // save cat's position
+//            self.catPosition = "left"
+//
+//        }
+//        else {
+//            print("TAP RIGHT")
+//            // 2. person clicked right, so move cat right
+//            cat.position = CGPoint(x:self.size.width*0.85, y:100)
+//
+//            // change the cat's direction
+//            let facingLeft = SKAction.scaleX(to: -1, duration: 0)
+//            self.cat.run(facingLeft)
+//
+//            // save cat's position
+//            self.catPosition = "right"
+//        }
+        
         // ------------------------------------
         // MARK: ANIMATION OF PUNCHING CAT
         // -------------------------------------
@@ -267,55 +240,40 @@ class GameScene: SKScene, WCSessionDelegate {
         // MARK: WIN AND LOSE CONDITIONS
         // -------------------------------------
         
-        // 1. if CAT and STICK are on same side - OKAY, keep going
-        // 2. if CAT and STICK are on opposite sides -- YOU LOSE
-
-        
-        let firstChopstick = self.chopstickPositions[0]
-        if (catPosition == "left" && firstChopstick == "left") {
-            // you lose
-            print("Cat Position = \(catPosition)")
-            print("Stick Position = \(firstChopstick)")
-            print("Conclusion = LOSE")
-            print("------")
+        if (self.sushiTower.count > 0) {
+            // 1. if CAT and STICK are on same side - OKAY, keep going
+            // 2. if CAT and STICK are on opposite sides -- YOU LOSE
+            let firstSushi:SushiPiece = self.sushiTower[0]
+            let chopstickPosition = firstSushi.stickPosition
+            
+            if (catPosition == chopstickPosition) {
+                // cat = left && chopstick == left
+                // cat == right && chopstick == right
+                print("Cat Position = \(catPosition)")
+                print("Stick Position = \(chopstickPosition)")
+                print("Conclusion = LOSE")
+                print("------")
+                
+                self.lives = self.lives - 1
+                self.lifeLabel.text = "Lives: \(self.lives)"
+            }
+            else if (catPosition != chopstickPosition) {
+                // cat == left && chopstick = right
+                // cat == right && chopstick = left
+                print("Cat Position = \(catPosition)")
+                print("Stick Position = \(chopstickPosition)")
+                print("Conclusion = WIN")
+                print("------")
+                
+                self.score = self.score + 10
+                self.scoreLabel.text = "Score: \(self.score)"
+            }
         }
-        else if (catPosition == "right" && firstChopstick == "right") {
-            // you lose
-            print("Cat Position = \(catPosition)")
-            print("Stick Position = \(firstChopstick)")
-            print("Conclusion = LOSE")
-            print("------")
+            
+        else {
+            print("Sushi tower is empty!")
         }
-        else if (catPosition == "left" && firstChopstick == "right") {
-            // you win
-            print("Cat Position = \(catPosition)")
-            print("Stick Position = \(firstChopstick)")
-            print("Conclusion = WIN")
-            print("------")
-        }
-        else if (catPosition == "right" && firstChopstick == "left") {
-            // you win
-            print("Cat Position = \(catPosition)")
-            print("Stick Position = \(firstChopstick)")
-            print("Conclusion = WIN")
-            print("------")
-        }
-
-        
-        
-        
-//
-//        if (catPosition == chopstickPosition) {
-//            // YOU LOSE
-//        }
-//        else if (catPosition != chopstickPosition) {
-//            // YOU WIN
-//        }
-        
-        
-        
-        
         
     }
- 
+    
 }

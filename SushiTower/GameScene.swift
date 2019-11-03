@@ -35,6 +35,7 @@ class GameScene: SKScene, WCSessionDelegate {
             
             // save cat's position
             self.catPosition = "right"
+
             } else if(catposition == "Left"){
             cat.position = CGPoint(x:self.size.width*0.25, y:100)
             
@@ -44,8 +45,21 @@ class GameScene: SKScene, WCSessionDelegate {
             
             // save cat's position
             self.catPosition = "left"
-            
+
         }
+        
+        let image1 = SKTexture(imageNamed: "character1")
+        let image2 = SKTexture(imageNamed: "character2")
+        let image3 = SKTexture(imageNamed: "character3")
+        
+        let punchTextures = [image1, image2, image3, image1]
+        
+        let punchAnimation = SKAction.animate(
+            with: punchTextures,
+            timePerFrame: 0.1)
+        
+        self.cat.run(punchAnimation)
+        
     }
     
     let cat = SKSpriteNode(imageNamed: "character1")

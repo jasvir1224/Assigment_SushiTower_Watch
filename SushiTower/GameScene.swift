@@ -68,10 +68,11 @@ class GameScene: SKScene, WCSessionDelegate {
     func runtimer(){timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: (#selector(self.updateTimer)), userInfo: nil, repeats: true)}
     
     @objc func updateTimer() {
-        
+        self.count = self.count + 1
+        if((self.count % 60 == 0) && (self.seconds > 0)){
         self.seconds = self.seconds - 1;     //This will decrement(count down)the seconds.
         self.time.text = "Time: \(self.seconds)"  //This will update the label.
-        
+        }
        
     }
     
@@ -88,12 +89,12 @@ class GameScene: SKScene, WCSessionDelegate {
     let scoreLabel = SKLabelNode(text:"Score: ")
     let time = SKLabelNode(text: "Time: ")
     
-    var seconds = 60
+    var seconds = 25
     var timer = Timer()
     var isTimerRunning = false
     var lives = 5
     var score = 0
-
+    var count = 0
     
     func spawnSushi() {
         
@@ -182,16 +183,17 @@ class GameScene: SKScene, WCSessionDelegate {
         }
     
     func buildTower() {
-        for _ in 0...10 {self.spawnSushi()}
-    }
-    
-    
+        for _ in 0...10 {self.spawnSushi()}}
     override func update(_ currentTime: TimeInterval) {
-     
-              self.runtimer()
+        //if(self.count % 60 == 0){
+            self.runtimer() //  }
+        if((self.seconds == 15) || (self.seconds == 10) || (self.seconds == 5) || (self.seconds == 0))
+        {
+            let message = ["time" : String(self.seconds)] as [String: Any]
+            WCSession.default.sendMessage(message, replyHandler: nil)
+        }
+        
     }
-    
-    
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         

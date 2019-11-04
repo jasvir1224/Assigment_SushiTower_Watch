@@ -17,6 +17,7 @@ class InterfaceController: WKInterfaceController, WCSessionDelegate {
     }
     
     
+    @IBOutlet weak var timeLabel: WKInterfaceLabel!
     @IBAction func leftButton() {
         
         if (WCSession.default.isReachable == true) {
@@ -31,6 +32,15 @@ class InterfaceController: WKInterfaceController, WCSessionDelegate {
             
         }
     }
+    
+    func session(_ session: WCSession, didReceiveMessage message: [String : Any]) {
+        
+        
+        let time = message["time"] as! String
+        timeLabel.setText("Time:\(time) seconds")
+     if(time == "0")
+        {timeLabel.setText("Game Over!")} }
+
     
     @IBAction func RightButton() {
         if (WCSession.default.isReachable == true) {

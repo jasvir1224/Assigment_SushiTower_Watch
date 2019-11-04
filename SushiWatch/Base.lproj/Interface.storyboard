@@ -24,7 +24,11 @@
                                 <action selector="RightButton" destination="AgC-eL-Hgc" id="uhY-IM-CW0"/>
                             </connections>
                         </button>
+                        <label width="136" height="23" alignment="left" text="Remaining Time:" id="XUQ-tb-P5D"/>
                     </items>
+                    <connections>
+                        <outlet property="timeLabel" destination="XUQ-tb-P5D" id="vis-uq-eG6"/>
+                    </connections>
                 </controller>
             </objects>
         </scene>

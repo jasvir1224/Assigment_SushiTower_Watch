@@ -62,6 +62,19 @@ class GameScene: SKScene, WCSessionDelegate {
         
     }
     
+    
+    // timer
+    
+    func runtimer(){timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: (#selector(self.updateTimer)), userInfo: nil, repeats: true)}
+    
+    @objc func updateTimer() {
+        
+        self.seconds = self.seconds - 1;     //This will decrement(count down)the seconds.
+        self.time.text = "Time: \(self.seconds)"  //This will update the label.
+        
+       
+    }
+    
     let cat = SKSpriteNode(imageNamed: "character1")
     let sushiBase = SKSpriteNode(imageNamed:"roll")
     
@@ -73,11 +86,14 @@ class GameScene: SKScene, WCSessionDelegate {
     // Show life and score labels
     let lifeLabel = SKLabelNode(text:"Lives: ")
     let scoreLabel = SKLabelNode(text:"Score: ")
+    let time = SKLabelNode(text: "Time: ")
     
+    var seconds = 60
+    var timer = Timer()
+    var isTimerRunning = false
     var lives = 5
     var score = 0
-    var persontap: String = ""
-    
+
     
     func spawnSushi() {
         
@@ -129,19 +145,30 @@ class GameScene: SKScene, WCSessionDelegate {
         // build the tower
         self.buildTower()
         
+  
+        
         // Game labels
-        self.scoreLabel.position.x = 100
+        self.scoreLabel.position.x = 60
         self.scoreLabel.position.y = size.height - 100
         self.scoreLabel.fontName = "Avenir"
         self.scoreLabel.fontSize = 40
         addChild(scoreLabel)
         
         // Life label
-        self.lifeLabel.position.x = 100
+        self.lifeLabel.position.x = 60
         self.lifeLabel.position.y = size.height - 150
         self.lifeLabel.fontName = "Avenir"
         self.lifeLabel.fontSize = 40
         addChild(lifeLabel)
+        
+        //timelabel
+        self.time.position.x = 60
+        self.time.position.y = size.height - 50
+        self.time.fontName = "Avenir"
+        self.time.fontSize = 40
+        self.time.fontColor = UIColor.red
+     
+        addChild(time)
         
         // WatchConnectivity
         if (WCSession.isSupported() == true) {
@@ -160,6 +187,8 @@ class GameScene: SKScene, WCSessionDelegate {
     
     
     override func update(_ currentTime: TimeInterval) {
+     
+              self.runtimer()
     }
     
     

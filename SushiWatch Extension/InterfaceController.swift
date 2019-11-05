@@ -17,13 +17,46 @@ class InterfaceController: WKInterfaceController, WCSessionDelegate {
     }
     
     
+    @IBAction func powerButton() {
+    
+    }
+    
+    @IBAction func resumeButton() {
+        
+        if (WCSession.default.isReachable == true) {
+            // Here is the message you want to send to the watch
+            // All messages get sent as dictionaries
+            let message = ["message":"resume"]as [String : Any]
+            // Send the message
+            WCSession.default.sendMessage(message, replyHandler:nil)
+            print("Message Sent")}
+        else {
+            print("Cannot reach watch!")
+            
+        }
+    }
+    
+    @IBAction func pauseButton() {
+        
+        if (WCSession.default.isReachable == true) {
+            // Here is the message you want to send to the watch
+            // All messages get sent as dictionaries
+            let message = ["message":"pause"]as [String : Any]
+            // Send the message
+            WCSession.default.sendMessage(message, replyHandler:nil)
+            print("Message Sent")}
+        else {
+            print("Cannot reach watch!")
+            
+        }
+    }
     @IBOutlet weak var timeLabel: WKInterfaceLabel!
     @IBAction func leftButton() {
         
         if (WCSession.default.isReachable == true) {
             // Here is the message you want to send to the watch
             // All messages get sent as dictionaries
-            let message = ["catMovement":"Left"]as [String : Any]
+            let message = ["message":"Left"]as [String : Any]
             // Send the message
        WCSession.default.sendMessage(message, replyHandler:nil)
            print("Message Sent")}
@@ -46,7 +79,7 @@ class InterfaceController: WKInterfaceController, WCSessionDelegate {
         if (WCSession.default.isReachable == true) {
             // Here is the message you want to send to the watch
             // All messages get sent as dictionaries
-            let message = ["catMovement":"Right"]as [String : Any]
+            let message = ["message":"Right"]as [String : Any]
             // Send the message
             WCSession.default.sendMessage(message, replyHandler:nil)
             print("Message Sent")}

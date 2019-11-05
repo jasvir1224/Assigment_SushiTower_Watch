@@ -23,10 +23,12 @@ class GameScene: SKScene, WCSessionDelegate {
         
     }
     
+    
     func session(_ session: WCSession, didReceiveMessage message: [String : Any]) {
         
-        let catposition = message["catMovement"] as! String
-        if(catposition == "Right")
+        let message = message["message"] as! String
+        
+        if(message == "Right")
         {
             cat.position = CGPoint(x:self.size.width*0.85, y:100)
             // change the cat's direction
@@ -36,7 +38,8 @@ class GameScene: SKScene, WCSessionDelegate {
             // save cat's position
             self.catPosition = "right"
 
-            } else if(catposition == "Left"){
+            }
+       else if(message == "Left"){
             cat.position = CGPoint(x:self.size.width*0.25, y:100)
             
             // change the cat's direction
@@ -46,7 +49,13 @@ class GameScene: SKScene, WCSessionDelegate {
             // save cat's position
             self.catPosition = "left"
 
+        } else if (message == "pause"){
+            self.scene?.view?.isPaused = true
+        } else if (message == "resume"){
+            self.scene?.view?.isPaused = false
+
         }
+        
         
         let image1 = SKTexture(imageNamed: "character1")
         let image2 = SKTexture(imageNamed: "character2")
@@ -59,17 +68,15 @@ class GameScene: SKScene, WCSessionDelegate {
             timePerFrame: 0.1)
         
         self.cat.run(punchAnimation)
-        
     }
-    
     
     // timer
     
-    func runtimer(){timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: (#selector(self.updateTimer)), userInfo: nil, repeats: true)}
+//    func runtimer(){timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: (#selector(self.updateTimer)), userInfo: nil, repeats: true)}
     
-    @objc func updateTimer() {
+     func updateTimer() {
         self.count = self.count + 1
-        if((self.count % 60 == 0) && (self.seconds > 0)){
+        if((self.count%60 == 0) && (self.seconds > 0)){
         self.seconds = self.seconds - 1;     //This will decrement(count down)the seconds.
         self.time.text = "Time: \(self.seconds)"  //This will update the label.
         }
@@ -119,10 +126,8 @@ class GameScene: SKScene, WCSessionDelegate {
             sushi.position.y = previousSushi.position.y + SUSHI_PIECE_GAP
             sushi.position.x = self.size.width*0.5
         }
-        
         // 3. Add sushi to screen
         addChild(sushi)
-        
         // 4. Add sushi to array
         self.sushiTower.append(sushi)
     }
@@ -145,9 +150,6 @@ class GameScene: SKScene, WCSessionDelegate {
         
         // build the tower
         self.buildTower()
-        
-  
-        
         // Game labels
         self.scoreLabel.position.x = 60
         self.scoreLabel.position.y = size.height - 100
@@ -185,13 +187,13 @@ class GameScene: SKScene, WCSessionDelegate {
     func buildTower() {
         for _ in 0...10 {self.spawnSushi()}}
     override func update(_ currentTime: TimeInterval) {
-        //if(self.count % 60 == 0){
-            self.runtimer() //  }
+        self.updateTimer()
         if((self.seconds == 15) || (self.seconds == 10) || (self.seconds == 5) || (self.seconds == 0))
         {
             let message = ["time" : String(self.seconds)] as [String: Any]
             WCSession.default.sendMessage(message, replyHandler: nil)
         }
+        
         
     }
     

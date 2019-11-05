@@ -14,17 +14,32 @@
             <objects>
                 <controller initiallyAnimated="NO" id="AgC-eL-Hgc" customClass="InterfaceController" customModule="SushiWatch" customModuleProvider="target">
                     <items>
-                        <button width="136" alignment="left" title="Left" id="zEZ-ky-SJN">
+                        <button width="1" height="18" alignment="left" title="Pause" id="Woo-Ja-HSk">
+                            <connections>
+                                <action selector="pauseButton" destination="AgC-eL-Hgc" id="Cch-W0-Iwl"/>
+                            </connections>
+                        </button>
+                        <button width="1" height="18" alignment="left" title="Resume" id="3Ep-o7-bz3">
+                            <connections>
+                                <action selector="resumeButton" destination="AgC-eL-Hgc" id="90v-Qf-pQL"/>
+                            </connections>
+                        </button>
+                        <button width="136" height="18" alignment="left" title="Left" id="zEZ-ky-SJN">
                             <connections>
                                 <action selector="leftButton" destination="AgC-eL-Hgc" id="3lq-AA-I2L"/>
                             </connections>
                         </button>
-                        <button width="135" alignment="right" title="Right" id="HAp-ny-6fY">
+                        <button width="135" height="17" alignment="right" title="Right" id="HAp-ny-6fY">
                             <connections>
                                 <action selector="RightButton" destination="AgC-eL-Hgc" id="uhY-IM-CW0"/>
                             </connections>
                         </button>
-                        <label width="136" height="23" alignment="left" text="Remaining Time:" id="XUQ-tb-P5D"/>
+                        <label width="135" height="24" alignment="left" id="XUQ-tb-P5D"/>
+                        <button width="1" height="23" alignment="left" verticalAlignment="bottom" title="Powerup" id="Pyp-RI-Ev3">
+                            <connections>
+                                <action selector="powerButton" destination="AgC-eL-Hgc" id="MU8-gI-pn4"/>
+                            </connections>
+                        </button>
                     </items>
                     <connections>
                         <outlet property="timeLabel" destination="XUQ-tb-P5D" id="vis-uq-eG6"/>

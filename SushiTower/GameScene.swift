@@ -54,6 +54,10 @@ class GameScene: SKScene, WCSessionDelegate {
         } else if (message == "resume"){
             self.scene?.view?.isPaused = false
 
+        } else if(message == "powerup"){
+            self.seconds = self.seconds + 5
+            self.time.text = "Time: \(self.seconds)"  //This will update the label.
+
         }
         
         
@@ -192,6 +196,9 @@ class GameScene: SKScene, WCSessionDelegate {
         {
             let message = ["time" : String(self.seconds)] as [String: Any]
             WCSession.default.sendMessage(message, replyHandler: nil)
+        }
+        if((self.seconds == 0)){
+            self.scene?.view?.isPaused = true
         }
         
         

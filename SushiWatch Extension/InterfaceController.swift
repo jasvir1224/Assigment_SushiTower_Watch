@@ -16,8 +16,20 @@ class InterfaceController: WKInterfaceController, WCSessionDelegate {
         
     }
     
+    @IBOutlet weak var powerupButton: WKInterfaceButton!
     
     @IBAction func powerButton() {
+        if (WCSession.default.isReachable == true) {
+            // Here is the message you want to send to the watch
+            // All messages get sent as dictionaries
+            let message = ["message":"powerup"]as [String : Any]
+            // Send the message
+            WCSession.default.sendMessage(message, replyHandler:nil)
+            print("Message Sent")}
+        else {
+            print("Cannot reach watch!")
+            
+        }
     
     }
     
@@ -72,7 +84,12 @@ class InterfaceController: WKInterfaceController, WCSessionDelegate {
         let time = message["time"] as! String
         timeLabel.setText("Time:\(time) seconds")
      if(time == "0")
-        {timeLabel.setText("Game Over!")} }
+        {timeLabel.setText("Game Over!")}
+        
+        if(time == "18") && (time == "7"){
+            self.powerupButton.setHidden(false)
+        }
+    }
 
     
     @IBAction func RightButton() {
@@ -98,6 +115,7 @@ class InterfaceController: WKInterfaceController, WCSessionDelegate {
     override func willActivate() {
         // This method is called when watch view controller is about to be visible to user
         super.willActivate()
+
     }
     
     override func didDeactivate() {

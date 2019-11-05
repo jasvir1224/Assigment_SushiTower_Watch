@@ -42,6 +42,7 @@
                         </button>
                     </items>
                     <connections>
+                        <outlet property="powerupButton" destination="Pyp-RI-Ev3" id="irQ-ix-usg"/>
                         <outlet property="timeLabel" destination="XUQ-tb-P5D" id="vis-uq-eG6"/>
                     </connections>
                 </controller>
